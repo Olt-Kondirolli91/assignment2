@@ -1,4 +1,4 @@
-Go Web Scraper
+# Go Web Scraper
 
 A simple project demonstrating:
 - Go web server with Chi (https://github.com/go-chi/chi)
