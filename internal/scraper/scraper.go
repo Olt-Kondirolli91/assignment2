@@ -9,6 +9,8 @@ import (
 	"github.com/Olt-Kondirolli91/go-web-scraper/internal/models"
 )
 
+// ScrapeSites concurrently fetches each URL in urls, 
+// extracts the <title> element, and returns a slice of ScrapedData.
 func ScrapeSites(urls []string) ([]models.ScrapedData, error) {
 	var wg sync.WaitGroup
 	resultChan := make(chan models.ScrapedData, len(urls))
@@ -34,6 +36,8 @@ func ScrapeSites(urls []string) ([]models.ScrapedData, error) {
 	return results, nil
 }
 
+// scrapeTitle fetches the URL, parses the HTML,
+// and returns the <title> element text.
 func scrapeTitle(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {

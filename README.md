@@ -1,62 +1,78 @@
-# Go Web Scraper
+Go Web Scraper
 
-A simple web scraper built with Go to demonstrate fundamental Go features:
-- Building a web server
-- Concurrency with goroutines
-- Database connectivity
-- Basic testing
+A simple project demonstrating:
+- Go web server with Chi (https://github.com/go-chi/chi)
+- Database connectivity with PostgreSQL
+- Concurrency using goroutines and channels
+- Web scraping using net/http and HTML parsing
 
-## Getting Started
+-------------------------------------------------------------------
 
-1. **Clone the repo**:
-   ```bash
-   git clone https://github.com/Olt-Kondirolli91/go-web-scraper.git
+Getting Started
+
+1. Clone the repository
+   git clone https://github.com/your-username/go-web-scraper.git
    cd go-web-scraper
-   ```
 
-2. **Install Dependencies**:
-   ```bash
+2. Install Dependencies
    go mod tidy
-   ```
 
-3. **Set up the Database** (PostgreSQL in this example):
-   - Update the database URL in `cmd/webscraper/main.go`.
-   - Make sure your PostgreSQL instance is running.
+3. Update Database Credentials
+   - In cmd/webscraper/main.go, replace the DSN in ConnectPostgres with your PostgreSQL credentials.
 
-4. **Run the Server**:
-   ```bash
+4. Run the Server
    go run ./cmd/webscraper
-   ```
-   - Opens on [http://localhost:8080](http://localhost:8080).
+   - The server runs at http://localhost:8080
 
-## API Endpoints
+-------------------------------------------------------------------
 
-- **GET /**  
-  Returns a welcome message.
+Endpoints
 
-- **GET /scrape**  
-  Scrapes sample URLs and stores their titles in the database.
+- GET / — Returns a welcome message.
+- GET /scrape — Scrapes predefined URLs, inserts their titles into the scraped_data table.
+- GET /data — Returns the scraped data in JSON format.
 
-- **GET /data**  
-  Returns the scraped data in JSON format.
+-------------------------------------------------------------------
 
-## Testing
+Testing
 
-Run all tests:
-```bash
-go test ./...
-```
-If you want more detailed output, use:
-```bash
-go test -v ./...
-```
+Several tests cover different components:
 
-## Project Structure
+1. Scraper Tests (tests/scraper_test.go)
+   Tests the concurrency and HTML-parsing logic.
+2. Server Tests (tests/server_test.go)
+   Uses httptest to validate endpoints like /, /data.
+3. Database Tests (tests/database_test.go)
+   Verifies database connectivity and table operations.
 
-- `cmd/webscraper/main.go` – Entry point
-- `internal/server` – Server and route setup
-- `internal/scraper` – Concurrency and HTML parsing logic
-- `internal/database` – Database connection and setup
-- `internal/models` – Data models
-- `tests` – Unit and integration tests
+Run them all:
+   go test ./...
+
+For detailed test output:
+   go test -v ./...
+
+-------------------------------------------------------------------
+
+Project Structure (Overview)
+
+- cmd/webscraper/main.go  
+  Entry point. Initializes the database and starts the server.  
+- internal/server  
+  Defines the HTTP server, routes (/scrape, /data), and handlers.  
+- internal/scraper  
+  Scrapes URLs concurrently, extracts <title> tags.  
+- internal/database  
+  Manages the PostgreSQL connection and schema setup.  
+- internal/models  
+  Contains the ScrapedData struct for storing parsed data.  
+- tests/  
+  Unit and integration tests.
+
+-------------------------------------------------------------------
+
+Documentation
+
+All packages and functions include Go doc comments. You can view them in the command line:
+   go doc ./...
+Or simply browse the comments in each .go file.
 

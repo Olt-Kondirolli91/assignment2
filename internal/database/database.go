@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	_ "github.com/lib/pq"
 )
-
+// ConnectPostgres connects to a PostgreSQL database using the given DSN. 
+// It also ensures the scraped_data table exists. 
+// Returns the open *sql.DB or an error if the connection fails.
 func ConnectPostgres(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {

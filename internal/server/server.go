@@ -10,14 +10,17 @@ import (
 	"github.com/Olt-Kondirolli91/go-web-scraper/internal/scraper"
 )
 
+// Server holds references to shared resources, such as the database.
 type Server struct {
 	DB *sql.DB
 }
 
+// NewServer creates a new Server instance with the provided db connection. 
 func NewServer(db *sql.DB) *Server {
 	return &Server{DB: db}
 }
 
+// SetupRoutes registers all HTTP endpoints.
 func (s *Server) SetupRoutes(r *chi.Mux) {
 	r.Get("/", s.handleHome)
 	r.Get("/scrape", s.handleScrape)
