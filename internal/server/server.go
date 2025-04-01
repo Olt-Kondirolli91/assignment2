@@ -32,6 +32,11 @@ func (s *Server) handleHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleScrape(w http.ResponseWriter, r *http.Request) {
+	if s.DB == nil {
+		http.Error(w, "No DB connection available", http.StatusInternalServerError)
+		return
+	}
+
 	urls := []string{
 		"https://example.org",
 		"https://example.com",
@@ -46,27 +51,35 @@ func (s *Server) handleScrape(w http.ResponseWriter, r *http.Request) {
 	for _, res := range results {
 		_, err := s.DB.Exec("INSERT INTO scraped_data (url, title) VALUES ($1, $2)", res.URL, res.Title)
 		if err != nil {
-			continue
+			// Log or handle error; skipping for brevity
 		}
 	}
 
-	w.Write([]byte("Scraping done and data saved!"))
+	w.Write([]byte("Scraping completed and data stored in DB!"))
 }
 
 func (s *Server) handleGetData(w http.ResponseWriter, r *http.Request) {
+	if s.DB == nil {
+		http.Error(w, "No DB connection available", http.StatusInternalServerError)
+		return
+	}
+
 	rows, err := s.DB.Query("SELECT id, url, title FROM scraped_data")
 	if err != nil {
-		http.Error(w, "Database error", http.StatusInternalServerError)
+		http.Error(w, "Failed to fetch data", http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
 
-	var results []models.ScrapedData
+	var allData []models.ScrapedData
 	for rows.Next() {
-		var d models.ScrapedData
-		rows.Scan(&d.ID, &d.URL, &d.Title)
-		results = append(results, d)
+		var data models.ScrapedData
+		if scanErr := rows.Scan(&data.ID, &data.URL, &data.Title); scanErr != nil {
+			continue
+		}
+		allData = append(allData, data)
 	}
 
-	json.NewEncoder(w).Encode(results)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(allData)
 }

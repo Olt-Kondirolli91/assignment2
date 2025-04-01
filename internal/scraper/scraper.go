@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"golang.org/x/net/html"
+
 	"github.com/Olt-Kondirolli91/go-web-scraper/internal/models"
 )
 
@@ -13,7 +14,7 @@ import (
 // extracts the <title> element, and returns a slice of ScrapedData.
 func ScrapeSites(urls []string) ([]models.ScrapedData, error) {
 	var wg sync.WaitGroup
-	resultChan := make(chan models.ScrapedData, len(urls))
+	resultsChan := make(chan models.ScrapedData, len(urls))
 
 	for _, u := range urls {
 		wg.Add(1)
@@ -21,17 +22,17 @@ func ScrapeSites(urls []string) ([]models.ScrapedData, error) {
 			defer wg.Done()
 			title, err := scrapeTitle(url)
 			if err == nil {
-				resultChan <- models.ScrapedData{URL: url, Title: title}
+				resultsChan <- models.ScrapedData{URL: url, Title: title}
 			}
 		}(u)
 	}
 
 	wg.Wait()
-	close(resultChan)
+	close(resultsChan)
 
 	var results []models.ScrapedData
-	for d := range resultChan {
-		results = append(results, d)
+	for r := range resultsChan {
+		results = append(results, r)
 	}
 	return results, nil
 }
@@ -62,5 +63,6 @@ func scrapeTitle(url string) (string, error) {
 		}
 	}
 	f(doc)
+
 	return title, nil
 }
