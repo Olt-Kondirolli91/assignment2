@@ -16,6 +16,11 @@ func main() { // Replace username, password, and dbname with your actual Postgre
 	}
 	defer db.Close()
 
+	if err := database.SeedData(db); err != nil {
+		log.Println("Seeding data failed:", err)
+	}
+	
+
 	r := chi.NewRouter()
 	s := server.NewServer(db)
 	s.SetupRoutes(r)
